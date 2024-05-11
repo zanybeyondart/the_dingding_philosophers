@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/zanyvisuals/Desktop/Philosophers/src",
+      "program": "/Users/zanyvisuals/Desktop/Philosophers/src/build/Debug/outDebug"
+    }
+  ]
+}
