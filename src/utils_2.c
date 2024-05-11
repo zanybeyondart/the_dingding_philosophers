@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 15:11:54 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/11 18:15:13 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/11 22:40:59 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	*smart_malloc(size_t size)
 	return (temp);
 }
 
-void	assign_forks(t_philo *philo, int *first_fork)
+void	assign_forks(t_philo *philo, int *first_fork, pthread_mutex_t *first_m)
 {
 	static int	i;
 
@@ -31,13 +31,18 @@ void	assign_forks(t_philo *philo, int *first_fork)
 	{
 		i++;
 		philo->next_fork = philo->next->my_fork;
-		assign_forks(philo->next, philo->my_fork);
+		philo->next_mutex = philo->next->my_mutex;
+		assign_forks(philo->next, philo->my_fork, philo->my_mutex);
 	}
 	else if (philo->next)
 	{
 		philo->next_fork = philo->next->my_fork;
-		assign_forks(philo->next, first_fork);
+		philo->next_mutex = philo->next->my_mutex;
+		assign_forks(philo->next, first_fork, first_m);
 	}
 	else if (philo->id > 0)
+	{
 		philo->next_fork = first_fork;
+		philo->next_mutex = first_m;
+	}
 }

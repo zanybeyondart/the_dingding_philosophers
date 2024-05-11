@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:52:56 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/11 20:43:49 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/11 23:21:19 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	free_program(t_philo *philo)
 	if (philo->next != NULL)
 		free_program(philo->next);
 	free(philo->my_fork);
+	free(philo->my_mutex);
 	free(philo);
 }
 
@@ -43,14 +44,43 @@ void	eating(t_philo *philo, int start_time, t_main *main)
 	struct timeval	time;
 	struct timeval	dum;
 
-	pthread_mutex_lock(&philo->mutex);
-	printf("\n%d Philo, takes %d and %d\n", philo->id, philo->my_fork[0], philo->next_fork[0]);
+	pthread_mutex_lock(philo->my_mutex);
+	pthread_mutex_lock(philo->next_mutex);
+	printf("\n%d %d Philo, takes %d and %d\n",main->current_time, philo->id, philo->my_fork[0], philo->next_fork[0]);
 	gettimeofday(&time, NULL);
 	while (magic_time(time) < main->eat_time)
 	{
 		gettimeofday(&dum, NULL);
 	}
-	pthread_mutex_unlock(&philo->mutex);
+	pthread_mutex_unlock(philo->my_mutex);
+	pthread_mutex_unlock(philo->next_mutex);
+
+}
+
+void	thinking(t_philo *philo, int start_time, t_main *main)
+{
+	struct timeval	time;
+	struct timeval	dum;
+
+	printf("\n%d %d Philo is thinking\n",main->current_time, philo->id);
+	gettimeofday(&time, NULL);
+	while (magic_time(time) < main->think_time)
+	{
+		gettimeofday(&dum, NULL);
+	}
+}
+
+void	sleeping(t_philo *philo, int start_time, t_main *main)
+{
+	struct timeval	time;
+	struct timeval	dum;
+
+	printf("\n%d %d Philo is sleeping\n",main->current_time, philo->id);
+	gettimeofday(&time, NULL);
+	while (magic_time(time) < main->sleep_time)
+	{
+		gettimeofday(&dum, NULL);
+	}
 }
 
 void	*function(void *ag)
@@ -59,8 +89,13 @@ void	*function(void *ag)
 	t_thread		*data;
 
 	data = (t_thread *)ag;
+	while(1)
+	{
 	gettimeofday(&time, NULL);
 	eating(data->philo, time.tv_usec, data->main);
+	thinking(data->philo, time.tv_usec, data->main);
+	sleeping(data->philo, time.tv_usec, data->main);
+	}
 	free(data);
 	return (NULL);
 }
@@ -71,6 +106,8 @@ void	add_to_list(t_philo *philo, int index)
 
 	temp = smart_malloc(sizeof(t_philo));
 	temp->my_fork = smart_malloc(sizeof(int));
+	temp->my_mutex = smart_malloc(sizeof(pthread_mutex_t));
+	temp->next_mutex = NULL;
 	temp->my_fork[0] = index;
 	temp->next_fork = NULL;
 	temp->next = NULL;
@@ -87,14 +124,16 @@ t_philo	*init_thread(int philos)
 	t_philo			*philo;
 	int				i;
 
-	i = 0;
+	i = 1;
 	philo = smart_malloc(sizeof(t_philo));
 	philo->my_fork = smart_malloc(sizeof(int));
-	philo->my_fork[0] = 0;
+	philo->my_mutex = smart_malloc(sizeof(pthread_mutex_t));
+	philo->next_mutex = NULL;
+	philo->my_fork[0] = 1;
 	philo->next_fork = NULL;
 	philo->next = NULL;
 	philo->id = i++;
-	while (i < philos)
+	while (i <= philos)
 	{
 		add_to_list(philo, i);
 		i++;

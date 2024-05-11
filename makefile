@@ -9,7 +9,7 @@ SRCS = ./src/philo.c\
 OBJS = $(SRCS:.c=.o)
 
 all:$(NAME)
-	$(CC) $(CFLAGS) ./src/philo.c ./philo.a
+	$(CC) $(CFLAGS) ./src/philo.c ./philo.a -fsanitize=address
 
 $(NAME): $(OBJS)
 	ar -rc $(NAME) $(OBJS) 

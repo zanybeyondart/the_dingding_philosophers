@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:51:14 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/11 20:33:51 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/11 23:24:00 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	threader(t_philo *current_philo, t_main *main)
 	data = smart_malloc(sizeof(t_thread));
 	data->philo = current_philo;
 	data->main = main;
-	pthread_mutex_init(&data->philo->mutex, NULL);
+	pthread_mutex_init(data->philo->my_mutex, NULL);
 	pthread_create(&current_philo->thread, NULL, function, (void *)data);
 }
 
@@ -44,17 +44,40 @@ void	join_threads(t_philo *philos)
 	}
 }
 
+void	*monitor(void *ag)
+{
+	struct timeval	time;
+	int				start;
+	t_main			*main;
+
+	main = (t_main *)ag;
+	gettimeofday(&time, NULL);
+	start = (time.tv_sec * 1000) + (time.tv_usec / 1000);
+	while (1)
+	{
+		gettimeofday(&time, NULL);
+		main->current_time = (time.tv_sec * 1000) + (time.tv_usec / 1000) - start;
+	}
+	return (NULL);
+}
+
 int	main(int ac, char **av)
 {
 	t_main	*main;
 
 	check_arguments(ac, av);
 	main = smart_malloc(sizeof(t_main));
-	main->eat_time = atoi(av[2]) * 1000;
+	main->eat_time = atoi(av[3]) * 1000;
 	main->philos = init_thread(atoi(av[1]));
-	assign_forks(main->philos, NULL);
+	main->sleep_time = atoi(av[4]) * 1000;
+	main->dead_time = atoi(av[2]) * 1000;
+	main->think_time = main->dead_time - (main->eat_time + main->sleep_time);
+	printf("%d Thinking\n", main->think_time);
+	assign_forks(main->philos, NULL, NULL);
+	pthread_create(&main->thread, NULL, monitor, main);
 	create_threads(main);
 	join_threads(main->philos);
+	pthread_join(main->thread, NULL);
 	free_program(main->philos);
 	free(main);
 }
