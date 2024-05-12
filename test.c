@@ -10,7 +10,6 @@ typedef struct s_philo
 	pthread_t			thread;
 	pthread_mutex_t		*right;
 	pthread_mutex_t		*left;
-	struct s_philo		*next;
 }	t_philo;
 
 int main ()

@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:52:56 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/11 23:21:19 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 12:35:09 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,68 +36,7 @@ int	magic_time(struct timeval time_main)
 	gettimeofday(&time, NULL);
 	sec = time.tv_sec - time_main.tv_sec;
 	usec = time.tv_usec - time_main.tv_usec;
-	return (sec * 1000000 + usec);
-}
-
-void	eating(t_philo *philo, int start_time, t_main *main)
-{
-	struct timeval	time;
-	struct timeval	dum;
-
-	pthread_mutex_lock(philo->my_mutex);
-	pthread_mutex_lock(philo->next_mutex);
-	printf("\n%d %d Philo, takes %d and %d\n",main->current_time, philo->id, philo->my_fork[0], philo->next_fork[0]);
-	gettimeofday(&time, NULL);
-	while (magic_time(time) < main->eat_time)
-	{
-		gettimeofday(&dum, NULL);
-	}
-	pthread_mutex_unlock(philo->my_mutex);
-	pthread_mutex_unlock(philo->next_mutex);
-
-}
-
-void	thinking(t_philo *philo, int start_time, t_main *main)
-{
-	struct timeval	time;
-	struct timeval	dum;
-
-	printf("\n%d %d Philo is thinking\n",main->current_time, philo->id);
-	gettimeofday(&time, NULL);
-	while (magic_time(time) < main->think_time)
-	{
-		gettimeofday(&dum, NULL);
-	}
-}
-
-void	sleeping(t_philo *philo, int start_time, t_main *main)
-{
-	struct timeval	time;
-	struct timeval	dum;
-
-	printf("\n%d %d Philo is sleeping\n",main->current_time, philo->id);
-	gettimeofday(&time, NULL);
-	while (magic_time(time) < main->sleep_time)
-	{
-		gettimeofday(&dum, NULL);
-	}
-}
-
-void	*function(void *ag)
-{
-	struct timeval	time;
-	t_thread		*data;
-
-	data = (t_thread *)ag;
-	while(1)
-	{
-	gettimeofday(&time, NULL);
-	eating(data->philo, time.tv_usec, data->main);
-	thinking(data->philo, time.tv_usec, data->main);
-	sleeping(data->philo, time.tv_usec, data->main);
-	}
-	free(data);
-	return (NULL);
+	return (sec * 1000 + usec / 1000);
 }
 
 void	add_to_list(t_philo *philo, int index)

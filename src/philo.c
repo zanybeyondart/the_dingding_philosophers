@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:51:14 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/11 23:24:00 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 12:35:33 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,11 @@ void	*monitor(void *ag)
 	main = (t_main *)ag;
 	gettimeofday(&time, NULL);
 	start = (time.tv_sec * 1000) + (time.tv_usec / 1000);
-	while (1)
+	while (main->philo_dead != 1)
 	{
 		gettimeofday(&time, NULL);
-		main->current_time = (time.tv_sec * 1000) + (time.tv_usec / 1000) - start;
+		main->current_time = (time.tv_sec * 1000)
+			+ (time.tv_usec / 1000) - start;
 	}
 	return (NULL);
 }
@@ -67,12 +68,12 @@ int	main(int ac, char **av)
 
 	check_arguments(ac, av);
 	main = smart_malloc(sizeof(t_main));
-	main->eat_time = atoi(av[3]) * 1000;
+	main->eat_time = atoi(av[3]);
 	main->philos = init_thread(atoi(av[1]));
-	main->sleep_time = atoi(av[4]) * 1000;
-	main->dead_time = atoi(av[2]) * 1000;
-	main->think_time = main->dead_time - (main->eat_time + main->sleep_time);
-	printf("%d Thinking\n", main->think_time);
+	main->sleep_time = atoi(av[4]);
+	main->dead_time = atoi(av[2]);
+	main->think_time = main->dead_time - (main->eat_time + main->sleep_time) - 1000;
+	main->philo_dead = 0;
 	assign_forks(main->philos, NULL, NULL);
 	pthread_create(&main->thread, NULL, monitor, main);
 	create_threads(main);
