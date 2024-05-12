@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 15:11:54 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/12 12:35:55 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 17:28:46 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,17 @@ void	assign_forks(t_philo *philo, int *first_fork, pthread_mutex_t *first_m)
 
 int	not_dead(t_main *main, t_philo *philos)
 {
+	if (philos->eating == 1)
+		return (1);
+	pthread_mutex_lock(&main->p_lock);
+	if (main->current_time - philos->last_meal >= main->dead_time
+		&& main->philo_dead != 1)
+	{
+		printf("%d %d died\n", main->current_time, philos->id);
+		main->philo_dead = 1;
+	}
+	pthread_mutex_unlock(&main->p_lock);
 	if (main->philo_dead == 1)
 		return (0);
-	// printf("%d - %d = %d\n", main->current_time, philos->last_meal, main->dead_time);
-	if (main->current_time - philos->last_meal > main->dead_time)
-	{
-		main->philo_dead = 1;
-		return (0);
-	}
 	return (1);
 }

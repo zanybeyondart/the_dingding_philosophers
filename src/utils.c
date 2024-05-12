@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:52:56 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/12 12:35:09 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 16:51:30 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,13 @@ void	add_to_list(t_philo *philo, int index)
 	t_philo		*temp;
 
 	temp = smart_malloc(sizeof(t_philo));
-	temp->my_fork = smart_malloc(sizeof(int));
+	temp->my_fork = smart_malloc(sizeof(int) * 2);
 	temp->my_mutex = smart_malloc(sizeof(pthread_mutex_t));
 	temp->next_mutex = NULL;
 	temp->my_fork[0] = index;
+	temp->eating = 0;
+	temp->last_meal = 0;
+	temp->my_fork[1] = 0;
 	temp->next_fork = NULL;
 	temp->next = NULL;
 	temp->id = index;
@@ -65,10 +68,13 @@ t_philo	*init_thread(int philos)
 
 	i = 1;
 	philo = smart_malloc(sizeof(t_philo));
-	philo->my_fork = smart_malloc(sizeof(int));
+	philo->my_fork = smart_malloc(sizeof(int) * 2);
 	philo->my_mutex = smart_malloc(sizeof(pthread_mutex_t));
 	philo->next_mutex = NULL;
 	philo->my_fork[0] = 1;
+	philo->my_fork[1] = 0;
+	philo->eating = 0;
+	philo->last_meal = 0;
 	philo->next_fork = NULL;
 	philo->next = NULL;
 	philo->id = i++;

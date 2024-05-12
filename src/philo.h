@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:53:25 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/12 12:02:19 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 17:21:08 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ typedef struct s_philo
 	int					id;
 	int					*my_fork;
 	int					*next_fork;
-	long				start_time;
 	pthread_mutex_t		*my_mutex;
 	pthread_mutex_t		*next_mutex;
 	int					last_meal;
+	int					eating;
 	struct s_philo		*next;
 }	t_philo;
 
@@ -38,10 +38,10 @@ typedef struct s_main
 	t_philo				*philos;
 	int					eat_time;
 	int					current_time;
-	int					think_time;
 	int					sleep_time;
 	int					dead_time;
 	int					philo_dead;
+	pthread_mutex_t		p_lock;
 	pthread_t			thread;
 }	t_main;
 

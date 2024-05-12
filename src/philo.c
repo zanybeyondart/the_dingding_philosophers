@@ -6,7 +6,7 @@
 /*   By: zvakil <zvakil@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:51:14 by zvakil            #+#    #+#             */
-/*   Updated: 2024/05/12 12:35:33 by zvakil           ###   ########.fr       */
+/*   Updated: 2024/05/12 17:37:54 by zvakil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,10 @@ void	*monitor(void *ag)
 	while (main->philo_dead != 1)
 	{
 		gettimeofday(&time, NULL);
+		pthread_mutex_lock(&main->p_lock);
 		main->current_time = (time.tv_sec * 1000)
 			+ (time.tv_usec / 1000) - start;
+		pthread_mutex_unlock(&main->p_lock);
 	}
 	return (NULL);
 }
@@ -68,12 +70,13 @@ int	main(int ac, char **av)
 
 	check_arguments(ac, av);
 	main = smart_malloc(sizeof(t_main));
-	main->eat_time = atoi(av[3]);
 	main->philos = init_thread(atoi(av[1]));
+	main->eat_time = atoi(av[3]);
+	main->current_time = 0;
 	main->sleep_time = atoi(av[4]);
 	main->dead_time = atoi(av[2]);
-	main->think_time = main->dead_time - (main->eat_time + main->sleep_time) - 1000;
 	main->philo_dead = 0;
+	pthread_mutex_init(&main->p_lock, NULL);
 	assign_forks(main->philos, NULL, NULL);
 	pthread_create(&main->thread, NULL, monitor, main);
 	create_threads(main);
